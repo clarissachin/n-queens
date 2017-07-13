@@ -13,6 +13,10 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
+window.getBeforeHalf = function(n) {
+  return Math.floor(n / 2) - 1;
+}
+
 window.hasAnyRooksConflictsOn = function(rowIndex, colIndex, board) {
   return this.hasRowConflictAt(rowIndex, board) || this.hasColConflictAt(colIndex, board);
 }
@@ -70,15 +74,70 @@ window.findNRooksSolution = function(n, row, col, board) {
     row--;
     this.findNRooksSolution(n, row, 0, board);
   }
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
+  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
   return board;
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
-window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+window.countNRooksSolutions = function(n, row, col, board, solutionCount) {
+  console.log('n is ', n);
+  board = board || this.createBoard(n); // make an empty board
+  row = row || 0; //set undefined rows to 0
+  col = col || 0; //set undefined columns to 0
+  solutionCount = solutionCount || 0;
+  var firstRun = board[0].reduce(function(sum, queens) {
+    return sum + queens;
+  }, 0) === 0;
+  var checkFirstQueen = function(array) {
+    return array.reduce(function(sum, queen) {
+    return sum + queen;
+    }, 0)
+  };
+  var beforeHalf = this.getBeforeHalf(n);
+  var half = 0;
+  if (n % 2 !== 0) {
+    half = beforeHalf + 1;
+  }
+  var firstQueenPosition = board[0].slice(0, beforeHalf + 1);
+  if (checkFirstQueen(firstQueenPosition) === 1 || (board[0][half] === 1) || (firstRun === true)) {
+    if (col < n) { //if row is valid
+      if (!hasAnyRooksConflictsOn(row, col, board)) { //check if current location is valid
+        board[row][col] = 1; //place a rook in current location
+        if (row === n - 1) { //if on last row (i.e., all queens have been placed on board)
+          // debugger;
+          if (checkFirstQueen(firstQueenPosition) === 1) {
+            solutionCount += 2; //return first possible solution
+            console.log('1st n is', n, 'solutionCount', solutionCount);
+            // debugger;
+            return solutionCount;
+          } else {
+            solutionCount++;
+            console.log('2nd n is', n, 'solutionCount', solutionCount);
+            return solutionCount;
+          }
+          if(board[row][col] === 1) {
+            board[row][col] = 0;
+          }
+          col++;
+          solutionCount = this.countNRooksSolutions(n, row, col, board, solutionCount);
+        } else {
+          row++;
+          solutionCount = this.countNRooksSolutions(n, row, 0, board, solutionCount); //go to next row
+        }
+      } else { //if current location is invalid
+        if(board[row][col] === 1) {
+          board[row][col] = 0;
+        }
+        col++;
+        solutionCount = this.countNRooksSolutions(n, row, col, board, solutionCount); //go to next column
+      }
+    } else { //if row is invalid
+      row--;
+      solutionCount = this.countNRooksSolutions(n, row, 0, board, solutionCount);
+    }
+  } // if Q is before half or in half
+  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
+  console.log('final n is', n, 'final solutionCount', solutionCount);
   return solutionCount;
 };
 
