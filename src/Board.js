@@ -146,7 +146,7 @@
       var index = majorDiagonalColumnIndexAtFirstRow;
       var queens = [];
       var positionTracker = 0;
-      if (index < 0) {
+      if (index <= 0) {
         for (var i = -index; i < board.n; i++) {
           // console.log('board[-index][positionTracker] is', board[-index][positionTracker]);
           // console.log('queens is ', queens);
@@ -169,6 +169,7 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var result = false;
+      // start from the bottom left of the board. directionally move to the top right of the board.
       for (var i = -(this.attributes.n - 2); i < this.attributes.n - 1; i++) {
         result = result || this.hasMajorDiagonalConflictAt(i);
       }
@@ -182,12 +183,44 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var board = this.attributes;
+      var index = minorDiagonalColumnIndexAtFirstRow;
+      var queens = [];
+      var positionTracker = 0;
+      if (index <= 0) { //may need to be <
+        positionTracker = board.n - 1;
+        for (var i = -index; i < board.n; i++) {
+          // console.log('board[-index][positionTracker] is', board[-index][positionTracker]);
+          // console.log('queens is ', queens);
+          // console.log('board[i][positionTracker is', board[i][positionTracker]);
+          // console.log('i is', i);
+          queens.push(board[i][positionTracker]);
+          console.log('queens is', queens);
+          positionTracker--;
+        }
+        // console.log('queens is', queens);
+        return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
+      } else { 
+        positionTracker = board.n - index - 1;
+        for (var i = 0; i < board.n - index; i++) {
+          queens.push(board[i][positionTracker]);
+          positionTracker--;
+        }
+        if (queens.length > 0) {
+          return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
+        }
+        return; // (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;  
+      }
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var result = false;
+      // start from the bottom left of the board. directionally move to the top right of the board.
+      for (var i = -(this.attributes.n - 2); i < this.attributes.n - 1; i++) {
+        result = result || this.hasMinorDiagonalConflictAt(i);
+      }
+      return result; // fixme
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
