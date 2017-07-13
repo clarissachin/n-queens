@@ -80,7 +80,7 @@
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
       // console.log('this is', this);
-      console.log('this.attributes is', this.attributes[rowIndex]);
+      // console.log('this.attributes is', this.attributes[rowIndex]);
       // console.log('is this an array?', Array.isArray(this.attributes));
       var board = this.attributes;
       return (board[rowIndex].reduce(function (queens, element) { return queens + element; }) > 1) ? true : false;
@@ -109,7 +109,6 @@
           col.push(board[row][colIndex]);
         }
       }
-      console.log('col', col);
       
       return (col.reduce(function (queens, element) { return queens + element; }) > 1) ? true : false;
     },
@@ -130,13 +129,50 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      
-
+      // console.log('is this thing on?');
+      // if a negative number: 
+        // start from the bottom left-most column (referenced by a negative index) 
+          // traverse up the first column (i++)
+          // on each new index: check the diagonal against board[(-index) + 1][j + 1] 
+            // push each value at that board's position to an array 
+            // reduce the array: if queens > 1 return true else return false 
+      // if a positive number: 
+        // start from top-left of the board
+          // traverse across the board i++ 
+          // on each new index: check the diagonal against board[j + 1][index + 1]
+            // push each value at that board's position to an array 
+            // reduce the array: if queens > 1 return true else return false 
+      var board = this.attributes;
+      var index = majorDiagonalColumnIndexAtFirstRow;
+      var queens = [];
+      var positionTracker = 0;
+      if (index < 0) {
+        for (var i = -index; i < board.n; i++) {
+          // console.log('board[-index][positionTracker] is', board[-index][positionTracker]);
+          // console.log('queens is ', queens);
+          // console.log('board[i][positionTracker is', board[i][positionTracker]);
+          // console.log('i is', i);
+          queens.push(board[i][positionTracker]);
+          positionTracker++;
+        }
+        // console.log('queens is', queens);
+        return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
+      } else { 
+        for (var i = index; i < board.n; i++) {
+          queens.push(board[positionTracker][i]);
+          positionTracker++;
+        }
+        return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;  
+      }
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var result = false;
+      for (var i = -(this.attributes.n - 2); i < this.attributes.n - 1; i++) {
+        result = result || this.hasMajorDiagonalConflictAt(i);
+      }
+      return result; // fixme
     },
 
 
