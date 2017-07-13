@@ -41,6 +41,10 @@
       return this.hasAnyRowConflicts() || this.hasAnyColConflicts();
     },
 
+    hasAnyRooksConflictsOn: function(rowIndex, colIndex) {
+      return this.hasRowConflictAt(rowIndex) || this.hasColConflictAt(colIndex);
+    },
+
     hasAnyQueenConflictsOn: function(rowIndex, colIndex) {
       return (
         this.hasRowConflictAt(rowIndex) ||
@@ -102,14 +106,14 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      var board = this.attributes; 
-      var col = []; 
+      var board = this.attributes;
+      var col = [];
       for (var row in board) {
         if (board.hasOwnProperty(row) && row !== 'n') {
           col.push(board[row][colIndex]);
         }
       }
-      
+
       return (col.reduce(function (queens, element) { return queens + element; }) > 1) ? true : false;
     },
 
@@ -130,18 +134,18 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       // console.log('is this thing on?');
-      // if a negative number: 
-        // start from the bottom left-most column (referenced by a negative index) 
+      // if a negative number:
+        // start from the bottom left-most column (referenced by a negative index)
           // traverse up the first column (i++)
-          // on each new index: check the diagonal against board[(-index) + 1][j + 1] 
-            // push each value at that board's position to an array 
-            // reduce the array: if queens > 1 return true else return false 
-      // if a positive number: 
+          // on each new index: check the diagonal against board[(-index) + 1][j + 1]
+            // push each value at that board's position to an array
+            // reduce the array: if queens > 1 return true else return false
+      // if a positive number:
         // start from top-left of the board
-          // traverse across the board i++ 
+          // traverse across the board i++
           // on each new index: check the diagonal against board[j + 1][index + 1]
-            // push each value at that board's position to an array 
-            // reduce the array: if queens > 1 return true else return false 
+            // push each value at that board's position to an array
+            // reduce the array: if queens > 1 return true else return false
       var board = this.attributes;
       var index = majorDiagonalColumnIndexAtFirstRow;
       var queens = [];
@@ -157,12 +161,12 @@
         }
         // console.log('queens is', queens);
         return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
-      } else { 
+      } else {
         for (var i = index; i < board.n; i++) {
           queens.push(board[positionTracker][i]);
           positionTracker++;
         }
-        return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;  
+        return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
       }
     },
 
@@ -195,12 +199,12 @@
           // console.log('board[i][positionTracker is', board[i][positionTracker]);
           // console.log('i is', i);
           queens.push(board[i][positionTracker]);
-          console.log('queens is', queens);
+          // console.log('board is ', board);
           positionTracker--;
         }
         // console.log('queens is', queens);
         return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
-      } else { 
+      } else {
         positionTracker = board.n - index - 1;
         for (var i = 0; i < board.n - index; i++) {
           queens.push(board[i][positionTracker]);
@@ -209,7 +213,7 @@
         if (queens.length > 0) {
           return (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
         }
-        return; // (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;  
+        return; // (queens.reduce(function (numQueens, element) { return numQueens + element; }) > 1) ? true : false;
       }
     },
 
